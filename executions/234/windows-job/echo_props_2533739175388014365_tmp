@@ -1,0 +1,30 @@
+#Thu Nov 07 12:31:53 CST 2019
+azkaban.flow.start.timezone=Asia/Shanghai
+azkaban.job.innodes=
+azkaban.flow.flowid=echo
+azkaban.flow.start.second=53
+azkaban.flow.submituser=azkaban
+command=java -version
+azkaban.flow.uuid=28b2f49f-f472-4e4e-9b19-a26968d3994d
+type=command
+azkaban.flow.start.timestamp=2019-11-07T12\:31\:53.789+08\:00
+azkaban.job.id=echo
+azkaban.job.attachment.file=D\:\\workspaces\\src_idea\\azkaban-3.40.0\\azkaban-3.40.0\\executions\\234\\windows-job\\_job.234.echo.attach
+azkaban.job.attempt=0
+azkaban.flow.start.milliseconds=789
+azkaban.flow.start.hour=12
+azkaban.flow.projectname=windows-test
+azkaban.memory.check=true
+azkaban.job.outnodes=
+azkaban.job.metadata.file=_job.234.echo.meta
+azkaban.flow.projectlastchangeddate=1573044624981
+azkaban.flow.projectlastchangedby=azkaban
+azkaban.flow.start.year=2019
+working.dir=D\:\\workspaces\\src_idea\\azkaban-3.40.0\\azkaban-3.40.0\\executions\\234\\windows-job
+azkaban.flow.start.month=11
+jvm.args=-Dazkaban.flowid\=echo -Dazkaban.execid\=234 -Dazkaban.jobid\=echo
+azkaban.flow.projectid=7
+azkaban.flow.start.minute=31
+azkaban.flow.execid=234
+azkaban.flow.projectversion=4
+azkaban.flow.start.day=07
