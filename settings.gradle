@@ -26,3 +26,5 @@ include 'azkaban-hadoop-security-plugin'
 include 'azkaban-solo-server'
 include 'azkaban-web-server'
 include 'test'
+include 'azkaban-ha'
+

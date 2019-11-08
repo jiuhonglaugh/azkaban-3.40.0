@@ -19,6 +19,8 @@ dependencies {
     compile project(':azkaban-spi')
     compile project(':azkaban-db')
 
+    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.6'
+
     compile deps.collections
     compile deps.dbcp2
     compile deps.dbutils
