@@ -18,6 +18,7 @@ dependencies {
     compile project(':az-core')
     compile project(':azkaban-spi')
     compile project(':azkaban-db')
+    compile project(':azkaban-ha')
 
     compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.6'
 

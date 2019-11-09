@@ -22,7 +22,6 @@ import azkaban.event.EventHandler;
 import azkaban.executor.ExecutorManager;
 import azkaban.ha.ZkManager;
 import azkaban.utils.Props;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -56,11 +55,14 @@ public class TriggerManager extends EventHandler implements
     private long lastRunnerThreadCheckTime = -1;
     private long runnerThreadIdleTime = -1;
     private String scannerStage = "";
+    private static String ZK_CONF_PATH = "";
+    private static boolean AZKABAN_HA;
 
     @Inject
     public TriggerManager(final Props props, final TriggerLoader triggerLoader,
                           final ExecutorManager executorManager) throws TriggerManagerException {
-
+        ZK_CONF_PATH = props.get("ZK_CONF_PATH");
+        AZKABAN_HA = props.getBoolean("AZKABAN_HA", false);
         requireNonNull(props);
         requireNonNull(executorManager);
         this.triggerLoader = requireNonNull(triggerLoader);
@@ -359,14 +361,41 @@ public class TriggerManager extends EventHandler implements
         }
 
         private void onTriggerTrigger(final Trigger t) throws TriggerManagerException {
-            ZkManager zkManager = new ZkManager("");
-            boolean status = zkManager.getStatus();
-            logger.error("================================ Start ===================================");
-            if (status) {
+
+            if (AZKABAN_HA) {
+                final List<TriggerAction> actions = t.getTriggerActions();
+                ZkManager zkManager = new ZkManager(ZK_CONF_PATH);
+                boolean status = zkManager.getStatus();
+                if (status) {
+                    for (final TriggerAction action : actions) {
+                        try {
+                            logger.error("================================ Start ===================================");
+                            logger.info("Doing trigger actions " + action.getDescription() + " for " + t);
+                            action.doAction();
+                        } catch (final Exception e) {
+                            logger.error("Failed to do action " + action.getDescription() + " for " + t, e);
+                        } catch (final Throwable th) {
+                            logger.error("Failed to do action " + action.getDescription() + " for " + t, th);
+                        }
+                    }
+                    if (t.isResetOnTrigger()) {
+                        t.resetTriggerConditions();
+                    } else {
+                        t.setStatus(TriggerStatus.EXPIRED);
+                    }
+                    try {
+                        TriggerManager.this.triggerLoader.updateTrigger(t);
+                    } catch (final TriggerLoaderException e) {
+                        throw new TriggerManagerException(e);
+                    }
+                    logger.info(" =============================== 此节点为： active =============================== ");
+                } else {
+                    logger.warn(" =============================== 此节点为： standby =============================== ");
+                }
+            } else {
                 final List<TriggerAction> actions = t.getTriggerActions();
                 for (final TriggerAction action : actions) {
                     try {
-                        logger.error("================================ Start ===================================");
                         logger.info("Doing trigger actions " + action.getDescription() + " for " + t);
                         action.doAction();
                     } catch (final Exception e) {
@@ -385,12 +414,8 @@ public class TriggerManager extends EventHandler implements
                 } catch (final TriggerLoaderException e) {
                     throw new TriggerManagerException(e);
                 }
-                logger.warn("路径已经存在，此节点为： active =====================================");
-                System.out.println("路径已经存在，此节点为： active ===============================");
-            } else {
-                logger.warn("路径已经存在，此节点为： standby =====================================");
-                System.out.println("路径已经存在，此节点为： standby ===============================");
             }
+
         }
 
         private void onTriggerPause(final Trigger t) throws TriggerManagerException {
