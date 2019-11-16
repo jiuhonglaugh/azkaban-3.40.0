@@ -22,15 +22,10 @@ import azkaban.event.EventHandler;
 import azkaban.executor.ExecutorManager;
 import azkaban.ha.ZkManager;
 import azkaban.utils.Props;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -56,13 +51,17 @@ public class TriggerManager extends EventHandler implements
     private long runnerThreadIdleTime = -1;
     private String scannerStage = "";
     private static String ZK_CONF_PATH = "";
-    private static boolean AZKABAN_HA;
+    private static boolean AZKABAN_HA = false;
+    private static ZkManager zkManager;
 
     @Inject
     public TriggerManager(final Props props, final TriggerLoader triggerLoader,
                           final ExecutorManager executorManager) throws TriggerManagerException {
-        ZK_CONF_PATH = props.get("ZK_CONF_PATH");
-        AZKABAN_HA = props.getBoolean("AZKABAN_HA", false);
+
+        if (props.getBoolean("ZK_CONF_PATH", false)) {
+            ZK_CONF_PATH = props.get("ZK_CONF_PATH");
+            AZKABAN_HA = props.getBoolean("AZKABAN_HA", false);
+        }
         requireNonNull(props);
         requireNonNull(executorManager);
         this.triggerLoader = requireNonNull(triggerLoader);
@@ -363,13 +362,15 @@ public class TriggerManager extends EventHandler implements
         private void onTriggerTrigger(final Trigger t) throws TriggerManagerException {
 
             if (AZKABAN_HA) {
+                if (null == zkManager)
+                    zkManager = new ZkManager(ZK_CONF_PATH);
                 final List<TriggerAction> actions = t.getTriggerActions();
-                ZkManager zkManager = new ZkManager(ZK_CONF_PATH);
                 boolean status = zkManager.getStatus();
                 if (status) {
                     for (final TriggerAction action : actions) {
                         try {
-                            logger.error("================================ Start ===================================");
+                            logger.info(" =============================== 此节点为： active =============================== ");
+                            logger.info(" ================================ 开始执行定时任务 ================================ ");
                             logger.info("Doing trigger actions " + action.getDescription() + " for " + t);
                             action.doAction();
                         } catch (final Exception e) {
@@ -388,9 +389,10 @@ public class TriggerManager extends EventHandler implements
                     } catch (final TriggerLoaderException e) {
                         throw new TriggerManagerException(e);
                     }
-                    logger.info(" =============================== 此节点为： active =============================== ");
+
                 } else {
-                    logger.warn(" =============================== 此节点为： standby =============================== ");
+                    logger.warn(" ================================ 此 节 点 为： standby =============================== ");
+                    logger.warn(" ================================= 不 执 行 定 时 任 务 ================================ ");
                 }
             } else {
                 final List<TriggerAction> actions = t.getTriggerActions();

@@ -31,7 +31,8 @@ public class PropertiesUtils {
         LOGGER.info("从 " + path + " 目录中 加载 " + ZK_CONF_NAME + " 配置文件");
         File file = new File(zkConfPath);
         if (!file.exists()) {
-            LOGGER.error("" + path + " 目录中不存在 " + ZK_CONF_NAME + " 配置文件");
+            LOGGER.error(path + " 目录中不存在 " + ZK_CONF_NAME + " 配置文件");
+            LOGGER.error("取消配置 AZKABAN_HA 参数或者将配置文件放置到你指定的目录");
             System.exit(-1);
         }
         try {
@@ -61,6 +62,18 @@ public class PropertiesUtils {
     }
 
     /**
+     * 根据 key 获取对应 String 类型的值
+     * 没有值时设置默认值
+     *
+     * @param key          key
+     * @param defaultValue 默认值
+     * @return
+     */
+    public String getStr(String key, String defaultValue) {
+        return zkPro.getProperty(key, defaultValue);
+    }
+
+    /**
      * 根据 key 获取对应 Integer 类型的值
      *
      * @param key
@@ -72,6 +85,7 @@ public class PropertiesUtils {
 
     /**
      * 根据 key 获取对应 Long 类型的值
+     *
      * @param key
      * @return
      */

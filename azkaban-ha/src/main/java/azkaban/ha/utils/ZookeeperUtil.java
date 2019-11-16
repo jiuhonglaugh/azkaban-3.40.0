@@ -3,6 +3,7 @@ package azkaban.ha.utils;
 
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,13 +42,15 @@ public class ZookeeperUtil {
      * @return 获取zk连接
      */
     private ZooKeeper initZkClient() {
-        ZooKeeper zk = null;
+
         try {
-            return new ZooKeeper(zkHost, defaultSessionTimeOut, new MyWatcher());
+            ZooKeeper zooKeeper = new ZooKeeper(zkHost, defaultSessionTimeOut, new MyWatcher());
+            LOGGER.info(" ========================== 初始化 ZkClient 成功 ======================== ");
+            return zooKeeper;
         } catch (IOException e) {
-            LOGGER.error(" ======================== 初始化 ZkClient 失败 ======================== ");
+            LOGGER.error(" ========================== 初始化 ZkClient 失败 ======================== ");
+            LOGGER.error(" ======================== zkHost: " + zkHost + " ======================== ");
             LOGGER.error(e.getMessage());
-            System.exit(-1);
         }
         return null;
     }
@@ -103,14 +106,12 @@ public class ZookeeperUtil {
         boolean flag = false;
         try {
             String result = zkClient.create(path, data.getBytes(Charset.defaultCharset()), acl, mode);
-            LOGGER.info(path + "在 Zookeeper 中创建成功，此节点为： Active ");
             if (null != result && result.equals(path))
                 flag = true;
-            return flag;
         } catch (KeeperException e) {
-            LOGGER.warn(" ============================ Zk 中已存在 " + path + " 路径：注册临时节点失败 ");
+            LOGGER.warn(e.getMessage());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage());
         } finally {
             if (!flag || isCloseSession) {
                 LOGGER.info(" ============================ Zk Connect Is Closed ============================ ");
@@ -134,7 +135,6 @@ public class ZookeeperUtil {
         try {
             byte[] data = zkClient.getData(zkPath, false, null);
             result = new String(data, Charset.defaultCharset());
-            return result;
         } catch (KeeperException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -143,6 +143,29 @@ public class ZookeeperUtil {
             close(zkClient);
         }
         return result;
+    }
+
+    /**
+     * 判断zk路径是否存在
+     *
+     * @param path zk中的路径
+     * @return true 为存在
+     */
+    public boolean exists(String path) {
+        boolean flag = false;
+        ZooKeeper zkClient = initZkClient();
+        try {
+            Stat exists = zkClient.exists(path, true);
+            if (exists != null)
+                flag = true;
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            close(zkClient);
+        }
+        return flag;
     }
 
 }
