@@ -31,6 +31,7 @@ public class ZookeeperUtil {
      * @param sessionTimeOut zk 连接超时时间
      */
     public ZookeeperUtil(String zkAddress, int sessionTimeOut) {
+        LOGGER.info("初始化 ZookeeperUtil 工具类");
         zkHost = zkAddress;
         if (sessionTimeOut > 2000)
             defaultSessionTimeOut = sessionTimeOut;
@@ -45,10 +46,9 @@ public class ZookeeperUtil {
 
         try {
             ZooKeeper zooKeeper = new ZooKeeper(zkHost, defaultSessionTimeOut, new MyWatcher());
-            LOGGER.info(" ========================== 初始化 ZkClient 成功 ======================== ");
             return zooKeeper;
         } catch (IOException e) {
-            LOGGER.error(" ========================== 初始化 ZkClient 失败 ======================== ");
+            LOGGER.error("初始化 ZkClient 失败");
             LOGGER.error(" ======================== zkHost: " + zkHost + " ======================== ");
             LOGGER.error(e.getMessage());
         }
@@ -86,6 +86,7 @@ public class ZookeeperUtil {
         try {
             if (null != zkCli) {
                 zkCli.close();
+                LOGGER.info(" Zk Connect Is Closed ");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -114,10 +115,9 @@ public class ZookeeperUtil {
             LOGGER.warn(e.getMessage());
         } finally {
             if (!flag || isCloseSession) {
-                LOGGER.info(" ============================ Zk Connect Is Closed ============================ ");
                 close(zkClient);
             } else {
-                LOGGER.warn(" ============================ Zk Connect Is Open ============================  ");
+                LOGGER.warn(" Zk Connect Is Open ");
             }
         }
         return flag;

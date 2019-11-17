@@ -9,15 +9,14 @@ import java.util.Properties;
 
 public class PropertiesUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesUtils.class);
-    private static final String ZK_CONF_NAME = "zookeeper.properties";
     private static final Properties zkPro = new Properties();
 
     /**
      * 获取 resources 目录中的 zookeeper.properties 配置文件
      */
     public PropertiesUtils() {
-        LOGGER.info("从 Resouces目录中 加载 zookeeper.properties 配置文件");
-        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(ZK_CONF_NAME);
+        LOGGER.info("从 Resouces目录中 加载 配置文件");
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("zookeeper.properties");
         getPro(in);
     }
 
@@ -27,16 +26,15 @@ public class PropertiesUtils {
      * @param path zookeeper.properties 配置文件 目录
      */
     public PropertiesUtils(String path) {
-        String zkConfPath = path + "/" + ZK_CONF_NAME;
-        LOGGER.info("从 " + path + " 目录中 加载 " + ZK_CONF_NAME + " 配置文件");
-        File file = new File(zkConfPath);
+        LOGGER.info("从 " + path + " 目录中 加载 配置文件");
+        File file = new File(path);
         if (!file.exists()) {
-            LOGGER.error(path + " 目录中不存在 " + ZK_CONF_NAME + " 配置文件");
-            LOGGER.error("取消配置 AZKABAN_HA 参数或者将配置文件放置到你指定的目录");
+            LOGGER.error(path + " 配置文件不存在 ");
+            LOGGER.error("取消配置 AZKABAN_HA=true 参数或者配置正确的文件路径 ");
             System.exit(-1);
         }
         try {
-            getPro(new FileInputStream(zkConfPath));
+            getPro(new FileInputStream(path));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -70,7 +68,11 @@ public class PropertiesUtils {
      * @return
      */
     public String getStr(String key, String defaultValue) {
-        return zkPro.getProperty(key, defaultValue);
+        String property = zkPro.getProperty(key, defaultValue);
+        if (property.length() == 0) {
+            return defaultValue;
+        }
+        return property;
     }
 
     /**

@@ -21,6 +21,7 @@ import static java.util.Objects.requireNonNull;
 import azkaban.event.EventHandler;
 import azkaban.executor.ExecutorManager;
 import azkaban.ha.ZkManager;
+import azkaban.ha.impl.AzkabanHa;
 import azkaban.utils.Props;
 
 import javax.inject.Inject;
@@ -50,18 +51,18 @@ public class TriggerManager extends EventHandler implements
     private long lastRunnerThreadCheckTime = -1;
     private long runnerThreadIdleTime = -1;
     private String scannerStage = "";
-    private static String ZK_CONF_PATH = "";
-    private static boolean AZKABAN_HA = false;
-    private static ZkManager zkManager;
+    private static String confpath;
+    private static boolean azkabanHa = false;
+    private static AzkabanHa haManager;
 
     @Inject
     public TriggerManager(final Props props, final TriggerLoader triggerLoader,
                           final ExecutorManager executorManager) throws TriggerManagerException {
-
-        if (props.getBoolean("ZK_CONF_PATH", false)) {
-            ZK_CONF_PATH = props.get("ZK_CONF_PATH");
-            AZKABAN_HA = props.getBoolean("AZKABAN_HA", false);
+        if (props.containsKey("CONF_PATH")) {
+            confpath = props.get("CONF_PATH");
+            azkabanHa = props.getBoolean("AZKABAN_HA");
         }
+
         requireNonNull(props);
         requireNonNull(executorManager);
         this.triggerLoader = requireNonNull(triggerLoader);
@@ -361,11 +362,11 @@ public class TriggerManager extends EventHandler implements
 
         private void onTriggerTrigger(final Trigger t) throws TriggerManagerException {
 
-            if (AZKABAN_HA) {
-                if (null == zkManager)
-                    zkManager = new ZkManager(ZK_CONF_PATH);
+            if (azkabanHa) {
+                if (null == haManager)
+                    haManager = new ZkManager(confpath);
                 final List<TriggerAction> actions = t.getTriggerActions();
-                boolean status = zkManager.getStatus();
+                boolean status = haManager.getStatus();
                 if (status) {
                     for (final TriggerAction action : actions) {
                         try {
