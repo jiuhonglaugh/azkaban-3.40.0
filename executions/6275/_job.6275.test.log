@@ -1,0 +1,17 @@
+20-11-2019 21:07:37 CST test INFO - Starting job test at 1574255238353
+20-11-2019 21:07:37 CST test INFO - azkaban.webserver.url property was not set
+20-11-2019 21:07:37 CST test INFO - job JVM args: -Dazkaban.flowid=test -Dazkaban.execid=6275 -Dazkaban.jobid=test
+20-11-2019 21:07:37 CST test INFO - Building command job executor. 
+20-11-2019 21:07:38 CST test INFO - Memory granted for job test
+20-11-2019 21:07:38 CST test INFO - 1 commands to execute.
+20-11-2019 21:07:38 CST test INFO - cwd=D:\workspaces\src_idea\azkaban-3.40.0\azkaban-3.40.0\executions\6275
+20-11-2019 21:07:38 CST test INFO - effective user is: azkaban
+20-11-2019 21:07:38 CST test INFO - Command: java -version
+20-11-2019 21:07:38 CST test INFO - Environment variables: {JOB_OUTPUT_PROP_FILE=D:\workspaces\src_idea\azkaban-3.40.0\azkaban-3.40.0\executions\6275\test_output_1327468822337698270_tmp, JOB_PROP_FILE=D:\workspaces\src_idea\azkaban-3.40.0\azkaban-3.40.0\executions\6275\test_props_6716468582874543909_tmp, KRB5CCNAME=/tmp/krb5cc__test__test__test__6275__azkaban, JOB_NAME=test}
+20-11-2019 21:07:38 CST test INFO - Working directory: D:\workspaces\src_idea\azkaban-3.40.0\azkaban-3.40.0\executions\6275
+20-11-2019 21:07:38 CST test INFO - java version "1.8.0_73"
+20-11-2019 21:07:38 CST test INFO - Java(TM) SE Runtime Environment (build 1.8.0_73-b02)
+20-11-2019 21:07:38 CST test INFO - Java HotSpot(TM) 64-Bit Server VM (build 25.73-b02, mixed mode)
+20-11-2019 21:07:38 CST test INFO - Process completed successfully in 0 seconds.
+20-11-2019 21:07:38 CST test INFO - output properties file=D:\workspaces\src_idea\azkaban-3.40.0\azkaban-3.40.0\executions\6275\test_output_1327468822337698270_tmp
+20-11-2019 21:07:38 CST test INFO - Finishing job test at 1574255258962 with status SUCCEEDED

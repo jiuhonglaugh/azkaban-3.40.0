@@ -1,0 +1,17 @@
+20-11-2019 21:07:17 CST test INFO - Assigned executor : laugh:12321
+20-11-2019 21:07:17 CST test INFO - Running execid:6275 flow:test project:11 version:1
+20-11-2019 21:07:17 CST test INFO - Updating initial flow directory.
+20-11-2019 21:07:18 CST test INFO - Fetching job and shared properties.
+20-11-2019 21:07:18 CST test INFO - Starting flows
+20-11-2019 21:07:18 CST test INFO - Running flow 'test'.
+20-11-2019 21:07:18 CST test INFO - Configuring Azkaban metrics tracking for jobrunner object
+20-11-2019 21:07:18 CST test INFO - Submitting job 'test' to run.
+20-11-2019 21:07:18 CST test INFO - Created file appender for job test
+20-11-2019 21:07:18 CST test INFO - Attached file appender for job test
+20-11-2019 21:07:37 CST test INFO - Job Started: test
+20-11-2019 21:07:39 CST test INFO - No attachment file for job test written.
+20-11-2019 21:07:39 CST test INFO - Job test finished with status SUCCEEDED in 20 seconds
+20-11-2019 21:07:39 CST test INFO - Flow '' is set to SUCCEEDED in 21 seconds
+20-11-2019 21:07:39 CST test INFO - Finishing up flow. Awaiting Termination
+20-11-2019 21:07:40 CST test INFO - Finished Flow
+20-11-2019 21:07:40 CST test INFO - Setting end time for flow 6275 to 1574255260087

@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 
 import azkaban.event.EventHandler;
 import azkaban.executor.ExecutorManager;
-import azkaban.ha.ZkManager;
-import azkaban.ha.impl.AzkabanHa;
+import azkaban.ZkManager;
+import azkaban.impl.AzkabanHa;
 import azkaban.utils.Props;
 
 import javax.inject.Inject;
@@ -51,16 +51,16 @@ public class TriggerManager extends EventHandler implements
     private long lastRunnerThreadCheckTime = -1;
     private long runnerThreadIdleTime = -1;
     private String scannerStage = "";
-    private static String confpath;
     private static boolean azkabanHa = false;
     private static AzkabanHa haManager;
+    private static String zkConfPath;
 
     @Inject
     public TriggerManager(final Props props, final TriggerLoader triggerLoader,
                           final ExecutorManager executorManager) throws TriggerManagerException {
-        if (props.containsKey("CONF_PATH")) {
-            confpath = props.get("CONF_PATH");
-            azkabanHa = props.getBoolean("AZKABAN_HA");
+        if (props.containsKey("ZK_CONF_PATH")) {
+            zkConfPath = props.getString("ZK_CONF_PATH");
+            azkabanHa = props.getBoolean("AZKABAN_HA_STATUS");
         }
 
         requireNonNull(props);
@@ -289,6 +289,7 @@ public class TriggerManager extends EventHandler implements
 
         @Override
         public void run() {
+
             while (!this.shutdown) {
                 synchronized (TriggerManager.this.syncObj) {
                     try {
@@ -332,7 +333,6 @@ public class TriggerManager extends EventHandler implements
             for (final Trigger t : this.triggers) {
                 try {
                     TriggerManager.this.scannerStage = "Checking for trigger " + t.getTriggerId();
-
                     if (t.getStatus().equals(TriggerStatus.READY)) {
 
                         /**
@@ -361,10 +361,9 @@ public class TriggerManager extends EventHandler implements
         }
 
         private void onTriggerTrigger(final Trigger t) throws TriggerManagerException {
-
             if (azkabanHa) {
                 if (null == haManager)
-                    haManager = new ZkManager(confpath);
+                    haManager = new ZkManager(zkConfPath);
                 final List<TriggerAction> actions = t.getTriggerActions();
                 boolean status = haManager.getStatus();
                 if (status) {
@@ -394,6 +393,8 @@ public class TriggerManager extends EventHandler implements
                 } else {
                     logger.warn(" ================================ 此 节 点 为： standby =============================== ");
                     logger.warn(" ================================= 不 执 行 定 时 任 务 ================================ ");
+                    logger.warn(" ================================ 当 前 任 务 重 新 计 时 ============================== ");
+                    t.resetTriggerConditions();
                 }
             } else {
                 final List<TriggerAction> actions = t.getTriggerActions();
