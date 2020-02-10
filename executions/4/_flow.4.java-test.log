@@ -1,0 +1,17 @@
+08-02-2020 19:31:47 CST java-test INFO - Assigned executor : laugh:12321
+08-02-2020 19:31:47 CST java-test INFO - Running execid:4 flow:java-test project:1 version:2
+08-02-2020 19:31:47 CST java-test INFO - Updating initial flow directory.
+08-02-2020 19:31:47 CST java-test INFO - Fetching job and shared properties.
+08-02-2020 19:31:47 CST java-test INFO - Starting flows
+08-02-2020 19:31:47 CST java-test INFO - Running flow 'java-test'.
+08-02-2020 19:31:47 CST java-test INFO - Configuring Azkaban metrics tracking for jobrunner object
+08-02-2020 19:31:47 CST java-test INFO - Submitting job 'java-test' to run.
+08-02-2020 19:31:47 CST java-test INFO - Created file appender for job java-test
+08-02-2020 19:31:47 CST java-test INFO - Attached file appender for job java-test
+08-02-2020 19:31:47 CST java-test INFO - Job Started: java-test
+08-02-2020 19:31:47 CST java-test INFO - No attachment file for job java-test written.
+08-02-2020 19:31:47 CST java-test INFO - Job java-test finished with status SUCCEEDED in 0 seconds
+08-02-2020 19:31:47 CST java-test INFO - Flow '' is set to SUCCEEDED in 0 seconds
+08-02-2020 19:31:47 CST java-test INFO - Finishing up flow. Awaiting Termination
+08-02-2020 19:31:47 CST java-test INFO - Finished Flow
+08-02-2020 19:31:47 CST java-test INFO - Setting end time for flow 4 to 1581161507738

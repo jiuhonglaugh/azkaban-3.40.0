@@ -199,7 +199,6 @@ public class AzkabanWebServer extends AzkabanServer {
   }
 
   public static void main(final String[] args) throws Exception {
-    System.out.println("============================================");
     // Redirect all std out and err messages into log4j
     StdOutErrRedirect.redirectOutAndErrToLog();
 

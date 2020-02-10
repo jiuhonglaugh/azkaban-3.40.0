@@ -1,0 +1,30 @@
+08-02-2020 19:30:34 CST java-test INFO - Starting job java-test at 1581161434968
+08-02-2020 19:30:34 CST java-test INFO - azkaban.webserver.url property was not set
+08-02-2020 19:30:34 CST java-test INFO - job JVM args: -Dazkaban.flowid=java-test -Dazkaban.execid=3 -Dazkaban.jobid=java-test
+08-02-2020 19:30:34 CST java-test INFO - Building command job executor. 
+08-02-2020 19:30:35 CST java-test INFO - Memory granted for job java-test
+08-02-2020 19:30:35 CST java-test INFO - 1 commands to execute.
+08-02-2020 19:30:35 CST java-test INFO - cwd=D:\workspaces\src_idea\azkaban-3.40.0\azkaban-3.40.0\executions\3
+08-02-2020 19:30:35 CST java-test INFO - effective user is: azkaban
+08-02-2020 19:30:35 CST java-test INFO - Command: java version
+08-02-2020 19:30:35 CST java-test INFO - Environment variables: {JOB_OUTPUT_PROP_FILE=D:\workspaces\src_idea\azkaban-3.40.0\azkaban-3.40.0\executions\3\java-test_output_750511138013256081_tmp, JOB_PROP_FILE=D:\workspaces\src_idea\azkaban-3.40.0\azkaban-3.40.0\executions\3\java-test_props_6437922883678514908_tmp, KRB5CCNAME=/tmp/krb5cc__test__java-test__java-test__3__azkaban, JOB_NAME=java-test}
+08-02-2020 19:30:35 CST java-test INFO - Working directory: D:\workspaces\src_idea\azkaban-3.40.0\azkaban-3.40.0\executions\3
+08-02-2020 19:30:35 CST java-test INFO - ����: �Ҳ������޷��������� version
+08-02-2020 19:30:35 CST java-test INFO - Process completed unsuccessfully in 0 seconds.
+08-02-2020 19:30:35 CST java-test ERROR - Job run failed!
+java.lang.RuntimeException: azkaban.jobExecutor.utils.process.ProcessFailureException
+	at azkaban.jobExecutor.ProcessJob.run(ProcessJob.java:304)
+	at azkaban.execapp.JobRunner.runJob(JobRunner.java:752)
+	at azkaban.execapp.JobRunner.doRun(JobRunner.java:591)
+	at azkaban.execapp.JobRunner.run(JobRunner.java:552)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: azkaban.jobExecutor.utils.process.ProcessFailureException
+	at azkaban.jobExecutor.utils.process.AzkabanProcess.run(AzkabanProcess.java:130)
+	at azkaban.jobExecutor.ProcessJob.run(ProcessJob.java:296)
+	... 8 more
+08-02-2020 19:30:35 CST java-test ERROR - azkaban.jobExecutor.utils.process.ProcessFailureException cause: azkaban.jobExecutor.utils.process.ProcessFailureException
+08-02-2020 19:30:35 CST java-test INFO - Finishing job java-test at 1581161435303 with status FAILED

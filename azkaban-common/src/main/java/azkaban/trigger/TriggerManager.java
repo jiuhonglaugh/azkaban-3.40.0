@@ -58,6 +58,7 @@ public class TriggerManager extends EventHandler implements
     @Inject
     public TriggerManager(final Props props, final TriggerLoader triggerLoader,
                           final ExecutorManager executorManager) throws TriggerManagerException {
+
         if (props.containsKey("ZK_CONF_PATH")) {
             zkConfPath = props.getString("ZK_CONF_PATH");
             azkabanHa = props.getBoolean("AZKABAN_HA_STATUS");
@@ -364,13 +365,14 @@ public class TriggerManager extends EventHandler implements
             if (azkabanHa) {
                 if (null == haManager)
                     haManager = new ZkManager(zkConfPath);
+
                 final List<TriggerAction> actions = t.getTriggerActions();
                 boolean status = haManager.getStatus();
                 if (status) {
+                    logger.info(" =============================== 此节点为： active =============================== ");
+                    logger.info(" ================================ 开始执行定时任务 ================================ ");
                     for (final TriggerAction action : actions) {
                         try {
-                            logger.info(" =============================== 此节点为： active =============================== ");
-                            logger.info(" ================================ 开始执行定时任务 ================================ ");
                             logger.info("Doing trigger actions " + action.getDescription() + " for " + t);
                             action.doAction();
                         } catch (final Exception e) {

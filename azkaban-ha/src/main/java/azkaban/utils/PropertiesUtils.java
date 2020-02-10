@@ -30,14 +30,24 @@ public class PropertiesUtils {
         File file = new File(path);
         if (!file.exists()) {
             LOGGER.error(path + " 配置文件不存在 ");
-            LOGGER.error("取消配置 AZKABAN_HA=true 参数或者配置正确的文件路径 ");
+            LOGGER.error("取消配置 AZKABAN_HA_STATUS=true 参数或者配置正确的文件路径 ");
             System.exit(-1);
         }
         try {
             getPro(new FileInputStream(path));
+            if (zkPro.getProperty("AZKABAN_DEBUG", "").equals("true"))
+                this.print();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public void print() {
+        LOGGER.info("以下输出为配置文件中所有的配置项用来排查配置问题=============================");
+        for (String key : zkPro.stringPropertyNames()) {
+            LOGGER.info("keyName: " + key + " : " + zkPro.getProperty(key));
+        }
+        LOGGER.info("以上输出为配置文件中所有的配置项用来排查配置问题=============================");
     }
 
     private void getPro(InputStream inputStream) {

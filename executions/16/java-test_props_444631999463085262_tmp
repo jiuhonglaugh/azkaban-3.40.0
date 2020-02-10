@@ -1,0 +1,30 @@
+#Sat Feb 08 19:59:12 CST 2020
+azkaban.flow.start.timezone=Asia/Shanghai
+azkaban.job.innodes=
+azkaban.flow.flowid=java-test
+azkaban.flow.start.second=03
+azkaban.flow.submituser=azkaban
+command=java -version
+azkaban.flow.uuid=617e3ee0-0753-441b-8e17-5f1299d75ba1
+type=command
+azkaban.flow.start.timestamp=2020-02-08T19\:59\:03.037+08\:00
+azkaban.job.id=java-test
+azkaban.job.attachment.file=D\:\\workspaces\\src_idea\\azkaban-3.40.0\\azkaban-3.40.0\\executions\\16\\_job.16.java-test.attach
+azkaban.job.attempt=0
+azkaban.flow.start.milliseconds=037
+azkaban.flow.start.hour=19
+azkaban.flow.projectname=test
+azkaban.memory.check=true
+azkaban.job.outnodes=
+azkaban.job.metadata.file=_job.16.java-test.meta
+azkaban.flow.projectlastchangeddate=1581161496322
+azkaban.flow.projectlastchangedby=azkaban
+azkaban.flow.start.year=2020
+working.dir=D\:\\workspaces\\src_idea\\azkaban-3.40.0\\azkaban-3.40.0\\executions\\16
+azkaban.flow.start.month=02
+jvm.args=-Dazkaban.flowid\=java-test -Dazkaban.execid\=16 -Dazkaban.jobid\=java-test
+azkaban.flow.projectid=1
+azkaban.flow.start.minute=59
+azkaban.flow.execid=16
+azkaban.flow.projectversion=2
+azkaban.flow.start.day=08

@@ -36,7 +36,7 @@ public class ZkManager implements AzkabanHa {
      * @param confPath zookeeper.properties 配置文件的文件夹路径
      */
     public ZkManager(String confPath) {
-        LOGGER.info("初始化 zkManager");
+        LOGGER.info("初始化 " + ZkManager.class.getSimpleName());
         PropertiesUtils zkPro = new PropertiesUtils(confPath);
         USER_AZKABAN_HOST_ID = zkPro.getStr("AZKABAN_HOST_ID", DEFAULT_AZKABAN_HOST_ID);
         zkHost = zkPro.getStr("ZK_HOST");
@@ -84,12 +84,12 @@ public class ZkManager implements AzkabanHa {
      */
     private static String getHostUUID() {
         String uuid = UUID.randomUUID().toString();
-        LOGGER.info("默认主机 HOST—UUID 为 " + uuid);
+        LOGGER.info("默认主机 HOST—UUID 为 ：" + uuid);
         try {
             InetAddress addr = InetAddress.getLocalHost();
             uuid = addr.getHostAddress() + "@" + addr.getHostName();
             LOGGER.info("根据主机 IP地址 和 主机名 生成 默认的HOST—UUID 为：" + uuid);
-            LOGGER.info("如果在配置文件中设置了 AZKABAN_HOST_ID 生成的默认HOST—UUID 将会被你指定的 AZKABAN_HOST_ID 覆盖");
+            LOGGER.info("如果在配置文件中设置了 AZKABAN_HOST_ID 生成的默认 HOST—UUID 将会被你指定的 AZKABAN_HOST_ID 覆盖");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
