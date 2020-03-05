@@ -1,6 +1,6 @@
 package azkaban;
 
-import azkaban.impl.AzkabanHa;
+import azkaban.impl.AzkabanHaControl;
 import azkaban.utils.PropertiesUtils;
 import azkaban.utils.ZookeeperUtil;
 import org.apache.zookeeper.CreateMode;
@@ -19,13 +19,13 @@ import java.util.UUID;
  * History:
  * <author>          <time>          <version>          <desc>
  */
-public class ZkManager implements AzkabanHa {
+public class ZkAzkabanHaControl implements AzkabanHaControl {
 
     private static String zkHost;
     private static String zkPath;
     private static int sessionTimeOut;
     private static ZookeeperUtil zkUtil;
-    private static final Logger LOGGER = LoggerFactory.getLogger(ZkManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZkAzkabanHaControl.class);
     private static final String DEFAULT_AZKABAN_HOST_ID = getHostUUID();
     private static String USER_AZKABAN_HOST_ID;
 
@@ -35,13 +35,13 @@ public class ZkManager implements AzkabanHa {
      *
      * @param confPath zookeeper.properties 配置文件的文件夹路径
      */
-    public ZkManager(String confPath) {
-        LOGGER.info("初始化 " + ZkManager.class.getSimpleName());
+    public ZkAzkabanHaControl(String confPath) {
+        LOGGER.info("初始化 " + ZkAzkabanHaControl.class.getSimpleName());
         PropertiesUtils zkPro = new PropertiesUtils(confPath);
-        USER_AZKABAN_HOST_ID = zkPro.getStr("AZKABAN_HOST_ID", DEFAULT_AZKABAN_HOST_ID);
-        zkHost = zkPro.getStr("ZK_HOST");
-        sessionTimeOut = zkPro.getInteger("SESSION_TIME_OUT");
-        zkPath = zkPro.getStr("AZKABAN_HA_ZK_PATH");
+        USER_AZKABAN_HOST_ID = zkPro.getStr("zookeeper.azkaban.host.id", DEFAULT_AZKABAN_HOST_ID);
+        zkHost = zkPro.getStr("zookeeper.host");
+        sessionTimeOut = zkPro.getInteger("zookeeper.session.timeout");
+        zkPath = zkPro.getStr("zookeeper.azkaban.ha.path");
         zkUtil = new ZookeeperUtil(zkHost, sessionTimeOut);
     }
 

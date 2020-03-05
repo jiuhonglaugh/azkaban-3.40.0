@@ -1,5 +1,5 @@
 package azkaban.impl;
 
-public interface AzkabanHa {
+public interface AzkabanHaControl {
     boolean getStatus();
 }

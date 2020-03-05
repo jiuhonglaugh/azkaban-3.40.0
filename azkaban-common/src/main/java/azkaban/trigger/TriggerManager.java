@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 
 import azkaban.event.EventHandler;
 import azkaban.executor.ExecutorManager;
-import azkaban.ZkManager;
-import azkaban.impl.AzkabanHa;
+import azkaban.ZkAzkabanHaControl;
+import azkaban.impl.AzkabanHaControl;
 import azkaban.utils.Props;
 
 import javax.inject.Inject;
@@ -51,20 +51,21 @@ public class TriggerManager extends EventHandler implements
     private long lastRunnerThreadCheckTime = -1;
     private long runnerThreadIdleTime = -1;
     private String scannerStage = "";
-    private static boolean azkabanHa = false;
-    private static AzkabanHa haManager;
-    private static String zkConfPath;
+    private static boolean haStatus = false;
+    private static AzkabanHaControl haControl;
+    private static String haConf;
 
     @Inject
     public TriggerManager(final Props props, final TriggerLoader triggerLoader,
                           final ExecutorManager executorManager) throws TriggerManagerException {
 
-        if (props.containsKey("ZK_CONF_PATH")) {
-            zkConfPath = props.getString("ZK_CONF_PATH");
-            azkabanHa = props.getBoolean("AZKABAN_HA_STATUS");
+        if (props.containsKey("azkaban.ha.conf.path")) {
+            haConf = props.getString("azkaban.ha.conf.path");
+            haStatus = props.getBoolean("azkaban.ha.status");
         }
 
         requireNonNull(props);
+
         requireNonNull(executorManager);
         this.triggerLoader = requireNonNull(triggerLoader);
 
@@ -362,12 +363,12 @@ public class TriggerManager extends EventHandler implements
         }
 
         private void onTriggerTrigger(final Trigger t) throws TriggerManagerException {
-            if (azkabanHa) {
-                if (null == haManager)
-                    haManager = new ZkManager(zkConfPath);
+            if (haStatus) {
+                if (null == haControl)
+                    haControl = new ZkAzkabanHaControl(haConf);
 
                 final List<TriggerAction> actions = t.getTriggerActions();
-                boolean status = haManager.getStatus();
+                boolean status = haControl.getStatus();
                 if (status) {
                     logger.info(" =============================== 此节点为： active =============================== ");
                     logger.info(" ================================ 开始执行定时任务 ================================ ");
