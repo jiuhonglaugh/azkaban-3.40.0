@@ -51,17 +51,24 @@ public class TriggerManager extends EventHandler implements
     private long lastRunnerThreadCheckTime = -1;
     private long runnerThreadIdleTime = -1;
     private String scannerStage = "";
-    private static boolean haStatus = false;
     private static AzkabanHaControl haControl;
-    private static String haConf;
+
 
     @Inject
     public TriggerManager(final Props props, final TriggerLoader triggerLoader,
                           final ExecutorManager executorManager) throws TriggerManagerException {
 
-        if (props.containsKey("azkaban.ha.conf.path")) {
-            haConf = props.getString("azkaban.ha.conf.path");
-            haStatus = props.getBoolean("azkaban.ha.status");
+        if (props.getBoolean("azkaban.ha.status",false)) {
+            String haTpye = props.getString("azkaban.ha.type", "");
+            switch (haTpye) {
+                case "zookeeper":
+                    if (null == haControl) haControl = new ZkAzkabanHaControl(props);
+                    break;
+                default:
+                    logger.warn("开启了 azkaban 高可用但是未匹配到 azkaban.ha.type = " + haTpye);
+                    System.exit(-1);
+            }
+
         }
 
         requireNonNull(props);
@@ -363,13 +370,9 @@ public class TriggerManager extends EventHandler implements
         }
 
         private void onTriggerTrigger(final Trigger t) throws TriggerManagerException {
-            if (haStatus) {
-                if (null == haControl)
-                    haControl = new ZkAzkabanHaControl(haConf);
-
+            if (null != haControl) {
                 final List<TriggerAction> actions = t.getTriggerActions();
-                boolean status = haControl.getStatus();
-                if (status) {
+                if (haControl.getStatus()) {
                     logger.info(" =============================== 此节点为： active =============================== ");
                     logger.info(" ================================ 开始执行定时任务 ================================ ");
                     for (final TriggerAction action : actions) {

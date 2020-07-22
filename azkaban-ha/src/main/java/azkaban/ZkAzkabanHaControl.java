@@ -2,6 +2,7 @@ package azkaban;
 
 import azkaban.impl.AzkabanHaControl;
 import azkaban.utils.PropertiesUtils;
+import azkaban.utils.Props;
 import azkaban.utils.ZookeeperUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Properties;
 import java.util.UUID;
 
 /**
@@ -33,15 +35,14 @@ public class ZkAzkabanHaControl implements AzkabanHaControl {
     /**
      * 初始化基础参数
      *
-     * @param confPath zookeeper.properties 配置文件的文件夹路径
+     * @param pro azkaban.properties 配置文件的文件夹路径
      */
-    public ZkAzkabanHaControl(String confPath) {
+    public ZkAzkabanHaControl(Props pro) {
         LOGGER.info("初始化 " + ZkAzkabanHaControl.class.getSimpleName());
-        PropertiesUtils zkPro = new PropertiesUtils(confPath);
-        USER_AZKABAN_HOST_ID = zkPro.getStr("zookeeper.azkaban.host.id", DEFAULT_AZKABAN_HOST_ID);
-        zkHost = zkPro.getStr("zookeeper.host");
-        sessionTimeOut = zkPro.getInteger("zookeeper.session.timeout");
-        zkPath = zkPro.getStr("zookeeper.azkaban.ha.path");
+        USER_AZKABAN_HOST_ID = pro.getString("zookeeper.azkaban.host.id", DEFAULT_AZKABAN_HOST_ID);
+        zkHost = pro.getString("zookeeper.host");
+        sessionTimeOut = pro.getInt("zookeeper.session.timeout");
+        zkPath = pro.getString("zookeeper.azkaban.ha.path","/azkaban_ha");
         zkUtil = new ZookeeperUtil(zkHost, sessionTimeOut);
     }
 
@@ -67,12 +68,8 @@ public class ZkAzkabanHaControl implements AzkabanHaControl {
                 flag = true;
         } else {
             flag = zkUtil.creteNode(zkPath, USER_AZKABAN_HOST_ID, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL, false);
-            if (!flag) {
-                String zkData = zkUtil.getZkData(zkPath);
-                if (zkData.equals(USER_AZKABAN_HOST_ID)) {
-                    flag = true;
-                }
-            }
+            if (!flag && zkUtil.getZkData(zkPath).equals(USER_AZKABAN_HOST_ID))
+                flag = true;
         }
         return flag;
     }
