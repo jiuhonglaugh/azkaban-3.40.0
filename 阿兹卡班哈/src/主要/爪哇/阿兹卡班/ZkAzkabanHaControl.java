@@ -18,7 +18,7 @@ import java.util.UUID;
  * FileName: ZkManager
  * Author:   MAIBENBEN
  * Date:     2019/11/8 9:40
- * History:
+ * History: 1
  * <author>          <time>          <version>          <desc>
  */
 public class ZkAzkabanHaControl implements AzkabanHaControl {
