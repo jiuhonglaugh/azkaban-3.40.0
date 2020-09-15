@@ -7,6 +7,7 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
@@ -20,27 +21,23 @@ import java.util.UUID;
  */
 public class ZkAzkabanHaControl implements AzkabanHaControl {
 
-    private static String zkHost;
-    private static String zkPath;
-    private static int sessionTimeOut;
-    private static ZookeeperUtil zkUtil;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ZkAzkabanHaControl.class);
     private static final String DEFAULT_AZKABAN_HOST_ID = getHostUUID();
+    private static String zkHost;
+    private static String zkPath;
+    private static int SESSION_TIME_OUT;
+    private static ZookeeperUtil zkUtil;
     private static String USER_AZKABAN_HOST_ID;
 
-
-    /**
-     * 初始化基础参数
-     *
-     * @param pro azkaban.properties 配置文件的文件夹路径
-     */
-    public ZkAzkabanHaControl(Props pro) {
+    @Override
+    public void setParam(Props pro) {
         LOGGER.info("初始化 " + ZkAzkabanHaControl.class.getSimpleName());
-        USER_AZKABAN_HOST_ID = pro.getString("zookeeper.azkaban.host.id", DEFAULT_AZKABAN_HOST_ID);
-        zkHost = pro.getString("zookeeper.host");
-        sessionTimeOut = pro.getInt("zookeeper.session.timeout");
-        zkPath = pro.getString("zookeeper.azkaban.ha.path","/azkaban_ha");
-        zkUtil = new ZookeeperUtil(zkHost, sessionTimeOut);
+        this.USER_AZKABAN_HOST_ID = pro.getString("azkaban.ha.zookeeper.azkaban.host.id", DEFAULT_AZKABAN_HOST_ID);
+        this.zkHost = pro.getString("azkaban.ha.zookeeper.host");
+        this.SESSION_TIME_OUT = pro.getInt("azkaban.ha.zookeeper.session.timeout");
+        this.zkPath = pro.getString("azkaban.ha.zookeeper.azkaban.ha.path", "/azkaban_ha");
+        this.zkUtil = new ZookeeperUtil(zkHost, SESSION_TIME_OUT);
     }
 
     /**

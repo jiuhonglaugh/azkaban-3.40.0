@@ -20,12 +20,13 @@ import static java.util.Objects.requireNonNull;
 
 import azkaban.event.EventHandler;
 import azkaban.executor.ExecutorManager;
-import azkaban.ZkAzkabanHaControl;
 import azkaban.impl.AzkabanHaControl;
 import azkaban.utils.Props;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,24 +52,51 @@ public class TriggerManager extends EventHandler implements
     private long lastRunnerThreadCheckTime = -1;
     private long runnerThreadIdleTime = -1;
     private String scannerStage = "";
-    private static AzkabanHaControl haControl;
+    private static Class azkabanHaControl;
 
+    /**
+     * @param methodName    方法名
+     * @param param         方法参数
+     * @param parameterType 方法参数类型
+     * @throws Exception
+     */
+    private static boolean callMethod(String methodName, Object[] param, Class... parameterType) {
+        boolean flag = false;
+        Method m = null;
+        try {
+            m = azkabanHaControl.getDeclaredMethod(methodName, parameterType);
+        } catch (NoSuchMethodException e) {
+            logger.error(methodName + "NotFoundException");
+        }
+        try {
+            try {
+                m.invoke(azkabanHaControl.getDeclaredConstructor().newInstance(), param);
+                flag = true;
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+        return flag;
+    }
 
     @Inject
     public TriggerManager(final Props props, final TriggerLoader triggerLoader,
                           final ExecutorManager executorManager) throws TriggerManagerException {
-
-        if (props.getBoolean("azkaban.ha.status",false)) {
-            String haTpye = props.getString("azkaban.ha.type", "");
-            switch (haTpye) {
-                case "zookeeper":
-                    if (null == haControl) haControl = new ZkAzkabanHaControl(props);
-                    break;
-                default:
-                    logger.warn("开启了 azkaban 高可用但是未匹配到 azkaban.ha.type = " + haTpye);
-                    System.exit(-1);
+        if (props.getBoolean("azkaban.ha.status", false)) {
+            String haClassName = props.getString("azkaban.ha.class");
+            try {
+                logger.info("调用 azkaban-ha Class：" + haClassName);
+                this.azkabanHaControl = Class.forName(haClassName);
+            } catch (ClassNotFoundException e) {
+                logger.error(haClassName + "NotFoundException");
             }
-
+            callMethod("setParam", new Object[]{props}, Props.class);
         }
 
         requireNonNull(props);
@@ -307,7 +335,6 @@ public class TriggerManager extends EventHandler implements
                         TriggerManager.this.scannerStage =
                                 "Ready to start a new scan cycle at "
                                         + TriggerManager.this.lastRunnerThreadCheckTime;
-
                         try {
                             checkAllTriggers();
                         } catch (final Exception e) {
@@ -370,9 +397,9 @@ public class TriggerManager extends EventHandler implements
         }
 
         private void onTriggerTrigger(final Trigger t) throws TriggerManagerException {
-            if (null != haControl) {
-                final List<TriggerAction> actions = t.getTriggerActions();
-                if (haControl.getStatus()) {
+            final List<TriggerAction> actions = t.getTriggerActions();
+            if (null != azkabanHaControl) {
+                if (callMethod("getStatus", null)) {
                     logger.info(" =============================== 此节点为： active =============================== ");
                     logger.info(" ================================ 开始执行定时任务 ================================ ");
                     for (final TriggerAction action : actions) {
@@ -403,7 +430,6 @@ public class TriggerManager extends EventHandler implements
                     t.resetTriggerConditions();
                 }
             } else {
-                final List<TriggerAction> actions = t.getTriggerActions();
                 for (final TriggerAction action : actions) {
                     try {
                         logger.info("Doing trigger actions " + action.getDescription() + " for " + t);
