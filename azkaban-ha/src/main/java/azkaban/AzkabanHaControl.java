@@ -1,4 +1,4 @@
-package azkaban.impl;
+package azkaban;
 
 import azkaban.utils.Props;
 

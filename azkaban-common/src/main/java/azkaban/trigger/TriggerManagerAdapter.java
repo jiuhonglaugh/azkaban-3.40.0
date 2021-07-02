@@ -69,5 +69,4 @@ public interface TriggerManagerAdapter {
 
     public String getScannerThreadStage();
   }
-
 }

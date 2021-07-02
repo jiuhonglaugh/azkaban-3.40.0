@@ -18,13 +18,14 @@ package azkaban.trigger;
 
 import static java.util.Objects.requireNonNull;
 
+import azkaban.AzkabanHaControl;
 import azkaban.event.EventHandler;
 import azkaban.executor.ExecutorManager;
-import azkaban.impl.AzkabanHaControl;
 import azkaban.utils.Props;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -52,29 +53,23 @@ public class TriggerManager extends EventHandler implements
     private long lastRunnerThreadCheckTime = -1;
     private long runnerThreadIdleTime = -1;
     private String scannerStage = "";
-    private static Class azkabanHaControl;
+    private static AzkabanHaControl azkabanHaControl;
 
     /**
-     * @param methodName    方法名
-     * @param param         方法参数
-     * @param parameterType 方法参数类型
+     * @param
+     * @param aClass
      * @throws Exception
      */
-    private static boolean callMethod(String methodName, Object[] param, Class... parameterType) {
+    private boolean newInstance(Class<?> aClass) {
         boolean flag = false;
-        Method m = null;
+        Constructor m = null;
         try {
-            m = azkabanHaControl.getDeclaredMethod(methodName, parameterType);
+            m = aClass.getDeclaredConstructor();
         } catch (NoSuchMethodException e) {
-            logger.error(methodName + "NotFoundException");
+            e.printStackTrace();
         }
         try {
-            try {
-                m.invoke(azkabanHaControl.getDeclaredConstructor().newInstance(), param);
-                flag = true;
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
+            this.azkabanHaControl = (AzkabanHaControl) m.newInstance();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -92,11 +87,12 @@ public class TriggerManager extends EventHandler implements
             String haClassName = props.getString("azkaban.ha.class");
             try {
                 logger.info("调用 azkaban-ha Class：" + haClassName);
-                this.azkabanHaControl = Class.forName(haClassName);
+                newInstance(Class.forName(haClassName));
             } catch (ClassNotFoundException e) {
-                logger.error(haClassName + "NotFoundException");
+                logger.error(haClassName + " NotFoundException");
+                System.exit(-1);
             }
-            callMethod("setParam", new Object[]{props}, Props.class);
+            azkabanHaControl.setParam(props);
         }
 
         requireNonNull(props);
@@ -399,7 +395,7 @@ public class TriggerManager extends EventHandler implements
         private void onTriggerTrigger(final Trigger t) throws TriggerManagerException {
             final List<TriggerAction> actions = t.getTriggerActions();
             if (null != azkabanHaControl) {
-                if (callMethod("getStatus", null)) {
+                if (azkabanHaControl.getStatus()) {
                     logger.info(" =============================== 此节点为： active =============================== ");
                     logger.info(" ================================ 开始执行定时任务 ================================ ");
                     for (final TriggerAction action : actions) {
