@@ -6,7 +6,6 @@ import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -32,7 +31,7 @@ public class ZookeeperUtil {
     public ZookeeperUtil(String zkAddress, int sessionTimeOut) {
         LOGGER.info("初始化 ZookeeperUtil 工具类");
         zkHost = zkAddress;
-        if (sessionTimeOut > 2000)
+        if (sessionTimeOut < 2000)
             defaultSessionTimeOut = sessionTimeOut;
     }
 
@@ -50,31 +49,11 @@ public class ZookeeperUtil {
             LOGGER.error("初始化 ZkClient 失败");
             LOGGER.error(" ======================== zkHost: " + zkHost + " ======================== ");
             LOGGER.error(e.getMessage());
+            System.exit(-1);
         }
         return null;
     }
 
-    /**
-     * 获取 zkPath 路径下的子节点
-     *
-     * @param zkPath 在zookeeper中创建的路径
-     * @param watch  watcher
-     * @return 返回路径下的所有子节点
-     */
-    public List<String> getChildren(String zkPath, boolean watch) {
-        List<String> zooChildren;
-        ZooKeeper zk = initZkClient();
-        try {
-            LOGGER.info("Azkaban_Ha 在 Zookeeper 中的路径为：" + zkPath);
-            zooChildren = zk.getChildren(zkPath, watch);
-            return zooChildren;
-        } catch (KeeperException | InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            close(zk);
-        }
-        return null;
-    }
 
     /**
      * 关闭 zk 客户端连接
@@ -109,9 +88,9 @@ public class ZookeeperUtil {
             if (null != result && result.equals(path))
                 flag = true;
         } catch (KeeperException e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.error(e.getMessage());
         } catch (InterruptedException e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.error(e.getMessage());
         } finally {
             if (!flag || isCloseSession) {
                 close(zkClient);
@@ -135,7 +114,9 @@ public class ZookeeperUtil {
             byte[] data = zkClient.getData(zkPath, false, null);
             result = new String(data, Charset.defaultCharset());
         } catch (KeeperException e) {
+            LOGGER.error("connection zookeeper host failed => " + zkHost);
             e.printStackTrace();
+            System.exit(-1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -158,7 +139,9 @@ public class ZookeeperUtil {
             if (exists != null)
                 flag = true;
         } catch (KeeperException e) {
+            LOGGER.error("connection zookeeper host failed => " + zkHost);
             e.printStackTrace();
+            System.exit(-1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {

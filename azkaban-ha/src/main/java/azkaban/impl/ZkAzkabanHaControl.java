@@ -7,7 +7,6 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
@@ -34,6 +33,8 @@ public class ZkAzkabanHaControl implements AzkabanHaControl {
     public void setParam(Props pro) {
         LOGGER.info("初始化 " + ZkAzkabanHaControl.class.getSimpleName());
         this.USER_AZKABAN_HOST_ID = pro.getString("azkaban.ha.zookeeper.my.id", DEFAULT_AZKABAN_HOST_ID);
+        if ("".equals(this.USER_AZKABAN_HOST_ID))
+            this.USER_AZKABAN_HOST_ID = DEFAULT_AZKABAN_HOST_ID;
         this.zkHost = pro.getString("azkaban.ha.zookeeper.host");
         this.SESSION_TIME_OUT = pro.getInt("azkaban.ha.zookeeper.session.timeout");
         this.zkPath = pro.getString("azkaban.ha.zookeeper.base.path", "/azkaban_ha");
@@ -80,7 +81,7 @@ public class ZkAzkabanHaControl implements AzkabanHaControl {
             InetAddress addr = InetAddress.getLocalHost();
             uuid = addr.getHostAddress() + "@" + addr.getHostName();
             LOGGER.info("根据主机 IP地址 和 主机名 生成 默认的HOST—UUID 为：" + uuid);
-            LOGGER.info("如果在配置文件中设置了 AZKABAN_HOST_ID 生成的默认 HOST—UUID 将会被你指定的 AZKABAN_HOST_ID 覆盖");
+            LOGGER.info("如果在配置文件中设置了 azkaban.ha.zookeeper.my.id 默认生成的 HOST—UUID 将会被覆盖");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,10 +52,9 @@ public class TriggerManager extends EventHandler implements
     private long lastRunnerThreadCheckTime = -1;
     private long runnerThreadIdleTime = -1;
     private String scannerStage = "";
-    private static AzkabanHaControl azkabanHaControl;
+    private AzkabanHaControl azkabanHaControl;
 
     /**
-     * @param
      * @param aClass
      * @throws Exception
      */
