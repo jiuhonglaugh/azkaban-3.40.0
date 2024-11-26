@@ -9,7 +9,7 @@
     "later": "1.2.0",
     "eonasdan-bootstrap-datetimepicker": "4.17.47",
     "moment-timezone": "0.5.5",
-    "moment": "2.14.1"
+    "moment": "2.24.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
